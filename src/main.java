@@ -2,12 +2,16 @@
 public class main {
 
 	public static void main(String[] args) {
-		LZ077EncoderDecoder test= new LZ077EncoderDecoder(32,32);
+		LZ077EncoderDecoder test= new LZ077EncoderDecoder(20,20);
 		//banandnabdabananaman
-		String[] input_names = {"How much wood would a woodchuck chuck if a woodchuck could chuck wood? He would chuck, he would, as much as he could, and chuck as much wood As a woodchuck would if a woodchuck could chuck wood.",""};
-		
+		String[] input_names = {"Dr' Amit Wanna F*** With Me? Okay. You Wanna Play Rough? Okay! Say Hello To My Little LZ77!",""};
 		String[] output_names = null;
 		test.Compress(input_names,output_names);
+		System.out.println(test.getOutput());
+		input_names[0]=test.getOutput();
+		test.Decompress(input_names, output_names);
+		
+		
 		System.out.println();
 	}
 
