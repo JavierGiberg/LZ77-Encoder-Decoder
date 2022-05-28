@@ -1,16 +1,17 @@
 import java.util.ArrayList;
 
 /**
- * Assignment 2 Submitted by: Student 1. ID# XXXXXXXXX Student 2. ID# XXXXXXXXX
+ * Assignment 2 Submitted by: Javier Giberg.
  */
 
 public class LZ077EncoderDecoder implements Compressor {
 	private static int offset;
 	private static int lenghtOfMatch;
 	private static int pointer;
-	private static int s;// search window
-	private static int t;// Look head buffer
+	private static int s;
+	private static int t;
 	private static int match;
+	private static int countResultLength;
 	private static String inputCompress;
 	private static String outputCompress;
 	private static String inputDecompress;
@@ -18,21 +19,21 @@ public class LZ077EncoderDecoder implements Compressor {
 	private static ArrayList<Integer> index;
 	private static char Char_temp;
 
-	public LZ077EncoderDecoder(int s, int t) {
+	public LZ077EncoderDecoder(String s, String t) {
 
-		this.s = s;
-		this.t = t;
+		this.s = Integer.parseInt(s);
+		this.t = Integer.parseInt(t) + 6;
 		this.pointer = 0;
 		this.outputCompress = "";
 		this.outputDecompress = "";
 		this.match = 0;
-		index = new ArrayList<Integer>();
+		this.index = new ArrayList<Integer>();
 
 	}
 
 //--------------------------------------------------------------------------
-	@Override
-	public void Compress(String[] input_names, String[] output_names) {
+	
+	public String Compress(String[] input_names) {
 		inputCompress = input_names[0];
 		for (int i = 0; i < inputCompress.length(); i++) {
 			match = 0;
@@ -40,7 +41,7 @@ public class LZ077EncoderDecoder implements Compressor {
 				break;
 			searchMatch();
 		}
-
+		return outputCompress;
 	}
 
 //--------------------------------------------------------------------------
@@ -85,7 +86,7 @@ public class LZ077EncoderDecoder implements Compressor {
 		for (int i = 0; i < match; i++) {
 			count_temp = 0;
 			int indexFirst = index.get(i);
-			for (int j = 0; j < window; j++) {
+			for (int j = 0; j < t; j++) {
 				if (pointer_temp + j >= inputCompress.length()) {
 					flag = true;
 					break;
@@ -102,7 +103,10 @@ public class LZ077EncoderDecoder implements Compressor {
 				if (flag)
 					pointer--;
 				offset = pointer_temp - indexFirst;
+
 				lenghtOfMatch = count_temp;
+				if (lenghtOfMatch == 0)
+					offset = 0;
 				indexFirst++;
 			}
 
@@ -121,27 +125,27 @@ public class LZ077EncoderDecoder implements Compressor {
 		index.clear();
 
 	}
-
-	public String getOutput() {
-		return outputCompress;
+//--------------------------------------------------------------------------
+	public int countResultLength() {
+		return countResultLength;
 	}
 
 //--------------------------------------------------------------------------
 	static void buildResult(char Char) {
-
 		outputCompress += "(" + offset + "," + lenghtOfMatch + "," + Char + ")";
+		countResultLength++;
 	}
 
 //--------------------------------------------------------------------------
-	@Override
-	public void Decompress(String[] input_names, String[] output_names) {
+	
+	public String Decompress(String[] input_names) {
 		inputDecompress = input_names[0];
 
 		buildDecompress();
-		
-		System.out.println(outputDecompress);
-	}
 
+		return  outputDecompress;
+	}
+//--------------------------------------------------------------------------
 	static void buildDecompress() {
 		while (inputDecompress.length() > 0) {
 			getInterval();
@@ -149,7 +153,7 @@ public class LZ077EncoderDecoder implements Compressor {
 
 		}
 	}
-
+//--------------------------------------------------------------------------
 	static void getInterval() {
 		int cut_counter = 1;
 		String offset_temp = "";
@@ -181,21 +185,21 @@ public class LZ077EncoderDecoder implements Compressor {
 		inputDecompress = inputDecompress.substring(cut_counter);
 
 	}
+//--------------------------------------------------------------------------
 	static void buildOutput() {
-		int l=outputDecompress.length();
-		if(offset==0) 
-			outputDecompress+=Char_temp;
+		int l = outputDecompress.length();
+		if (offset == 0)
+			outputDecompress += Char_temp;
 		else {
-		for(int i=0;i<lenghtOfMatch;i++) {
-			
-			outputDecompress+=outputDecompress.charAt(l-offset+i);
+			for (int i = 0; i < lenghtOfMatch; i++) {
+
+				outputDecompress += outputDecompress.charAt(l - offset + i);
+			}
+			outputDecompress += Char_temp;
 		}
-		outputDecompress+=Char_temp;
-		}
-		
-		
-		
-		
+
 	}
+
+	
 
 }
